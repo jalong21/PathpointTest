@@ -37,20 +37,17 @@ object SampleService {
                 case Some(id: String) => Some(ScoreResult(score, id))
                 // if the id isn't there, skip line
                 case _ => throw new JsonParseException("invalid json format No JSON object could be decoded")
-                // if we get here, the JSON.parseFull didn't work.
-                case _ => throw new JsonParseException("invalid json format No JSON object could be decoded")
               }
+              // if we get here, the JSON.parseFull didn't work.
+              case _ => throw new JsonParseException("invalid json format No JSON object could be decoded")
             }
           } catch {
             case e: Exception => throw new JsonParseException("invalid json format No JSON object could be decoded")
           }
-        }
-        else
-        {
+        } else {
           None
         }
       }).flatten.toSeq
-
 
       // Get top N scores, sort by score, and output as JSON
       val topScores = scoreResults.sortWith((result1, result2) => result1.score > result2.score)
