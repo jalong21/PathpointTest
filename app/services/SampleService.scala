@@ -35,7 +35,7 @@ object SampleService {
               case Some(json: Map[String, Any]) => json.get("id") match {
                 // Check for the "id" key
                 case Some(id: String) => Some(ScoreResult(score, id))
-                // if the id isn't there, skip line
+                // if the id isn't there, throw exception
                 case _ => throw new JsonParseException("invalid json format No JSON object could be decoded")
               }
               // if we get here, the JSON.parseFull didn't work.
@@ -49,14 +49,17 @@ object SampleService {
         }
       }).flatten.toSeq
 
-      // Get top N scores, sort by score, and output as JSON
+      // sort scores
       val topScores = scoreResults.sortWith((result1, result2) => result1.score > result2.score)
+      // create json string
       returnJson = Json.prettyPrint(Json.toJson[Seq[ScoreResult]](topScores))
+      // print for logs
       println(returnJson)
 
     } catch {
       case e: JsonParseException => {
         println(s"JsonParseException: ${e.getMessage}")
+        // set return string as error
         returnJson = "invalid json format No JSON object could be decoded"
       }
       case e: FileNotFoundException => println(s"File not found: $filePath")
@@ -64,6 +67,7 @@ object SampleService {
       case e: Exception => println(s"An unexpected error occurred: ${e.getMessage}")
     }
 
+    // return result string
     returnJson
   }
 }
